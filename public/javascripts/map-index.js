@@ -47,7 +47,7 @@
          }
          layer.addTo(hospitalLayer);
      });
-     $('#btn-find-hos').click((e) => {
+     $('#frm-find-hos').submit((e) => {
          var find = $('#txt-find-hos').val();
          hos_data.eachLayer((layer) => {
              if (layer.feature.properties.hosname === find) {
