@@ -53,6 +53,7 @@
              if (layer.feature.properties.hosname === find) {
                  map.setZoom(14);
                  map.panTo(layer.getLatLng());
+                 layer.openPopup();
                  return;
              }
          });
