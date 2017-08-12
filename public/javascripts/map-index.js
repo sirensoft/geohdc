@@ -47,7 +47,18 @@
          }
          layer.addTo(hospitalLayer);
      });
- }); //end hospital
+     $('#btn-find-hos').click((e) => {
+         var find = $('#txt-find-hos').val();
+         hos_data.eachLayer((layer) => {
+             if (layer.feature.properties.hosname === find) {
+                 map.setZoom(14);
+                 map.panTo(layer.getLatLng());
+                 return;
+             }
+         });
+
+     });
+ }); //end hospital ready
 
  //ขอบเขตการปกครอง
  var admin_boder = L.tileLayer.wms('http://tile.gistda.or.th/geoserver/wms', {
