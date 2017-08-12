@@ -19,10 +19,12 @@ router.get('/hospital', (req, res) => {
             "features": []
         };
         result.forEach(function(row) {
+            var hosname = row.hosname.replace("โรงพยาบาลส่งเสริมสุขภาพตำบล", 'รพ.สต.');
+            hosname = hosname.replace("สถานีอนามัย", 'สอ.');
             collection.features.push({
                 "type": "Feature",
                 "properties": {
-                    hosname: row.hosname.replace("โรงพยาบาลส่งเสริมสุขภาพตำบล", 'รพ.สต.'),
+                    hosname: hosname,
                     hostype: row.hostype,
                     'marker-symbol': 'hospital',
                     'marker-color': '#0000FF',

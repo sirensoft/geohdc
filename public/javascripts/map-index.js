@@ -16,8 +16,8 @@
  var osmStreet = L.mapbox.tileLayer('mapbox.streets');
 
  var baseMap = {
-     'OSM-ถนน': osmStreet.addTo(map),
-     'Google-ถนน': googleStreet,
+     'OSM-ถนน': osmStreet,
+     'Google-ถนน': googleStreet.addTo(map),
      'Google-ผสม': googleHybrid,
      'Google-ดาวเทียม': googleSat,
 
