@@ -62,6 +62,9 @@
                     </div>
                 </li>
                 <li class="nav-item active">
+                    <a class="nav-link" href="/about">เกี่ยวกับ</a>
+                </li>
+                <li class="nav-item active">
                     <a class="nav-link" href="/login">เข้าระบบ</a>
                 </li>
             </ul>
@@ -89,19 +92,7 @@
     <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
     <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
     <script src="./javascripts/map-index.js"></script>
-    <script>
-        function openPop(url, percent) {
-            var w = 630,
-                h = 440; // default sizes
-            if (window.screen) {
-                w = window.screen.availWidth * percent / 100;
-                h = window.screen.availHeight * percent / 100;
-
-            }
-
-            var myWin = window.open(url, 'myWin', 'top=5,left=15,width=' + w + ',height=' + h);
-        }
-    </script>
+    <script src="./javascripts/func.js"></script>
 
 
 </body>
