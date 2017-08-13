@@ -72,7 +72,7 @@ $(function() {
                     map.setZoom(16);
                     map.panTo(layer.getLatLng());
                     layer.openPopup();
-                    $('#txt-find-hos').select();
+
                     return;
                 }
             });
