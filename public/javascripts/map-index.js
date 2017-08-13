@@ -65,7 +65,7 @@ $(function() {
 
 
         $('#frm-find-hos').submit((e) => {
-            $('#navbarsGisDefault').toggle();
+            //$('#navbarsGisDefault').toggle();
             var find = $('#txt-find-hos').val();
             hos_data.eachLayer((layer) => {
                 if (layer.feature.properties.hosname === find) {
