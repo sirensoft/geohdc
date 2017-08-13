@@ -29,6 +29,9 @@ $(function() {
     //end-base
 
     var availableTags = [];
+    $('#txt-find-hos').click(function(e) {
+        $(this).select();
+    });
 
     //hospital
     var hospitalLayer = L.featureGroup();
@@ -65,7 +68,7 @@ $(function() {
             var find = $('#txt-find-hos').val();
             hos_data.eachLayer((layer) => {
                 if (layer.feature.properties.hosname === find) {
-                    map.setZoom(14);
+                    map.setZoom(16);
                     map.panTo(layer.getLatLng());
                     layer.openPopup();
                     $('#txt-find-hos').select();
