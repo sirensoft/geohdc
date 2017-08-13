@@ -21,11 +21,16 @@
             border: 1px solid gray;
         }
     </style>
+
     <!-- Mapbox.js -->
     <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous" />
+
+    <!-- Jquery Ui -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 </head>
 
 <body>
@@ -41,22 +46,23 @@
                     <a class="nav-link" href="#">หน้าแรก<span class="sr-only">(current)</span></a>
                 </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown00" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">โรคติดต่อ</a>
+                <li class="nav-item dropdown active">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdown00" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">เฝ้าระวังโรคติดต่อ</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown00">
-                        <a class="dropdown-item" href="#">ไข้เลือดออก</a>
-                        <a class="dropdown-item" href="#">ฉี่หนู</a>
-                        <a class="dropdown-item" href="#">อื่นๆ</a>
+                        <a class="dropdown-item" href="#">โรคทางระบาดวิทยา</a>
                     </div>
                 </li>
 
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown active">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ข้อมูลสุขภาพ</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown01">
                         <a class="dropdown-item" href="#">ประชากร</a>
                         <a class="dropdown-item" href="#">คัดกรองสุขภาพ</a>
-                        <a class="dropdown-item" href="#">กิจกรรมสุขภาพ</a>
+                        <a class="dropdown-item" href="#" onclick="javascript:openPop('/login',90);">กิจกรรมสุขภาพ</a>
                     </div>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/login">เข้าระบบ</a>
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0" id="frm-find-hos">
@@ -73,12 +79,29 @@
 
 
     <!-- jQuery first, then Tether, then Bootstrap JS. -->
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
+
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
     <script src="./javascripts/map-index.js"></script>
+    <script>
+        function openPop(url, percent) {
+            var w = 630,
+                h = 440; // default sizes
+            if (window.screen) {
+                w = window.screen.availWidth * percent / 100;
+                h = window.screen.availHeight * percent / 100;
+
+            }
+
+            var myWin = window.open(url, 'myWin', 'top=5,left=15,width=' + w + ',height=' + h);
+        }
+    </script>
 
 
 </body>

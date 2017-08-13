@@ -9,6 +9,7 @@ var r_test = require('./routes/test');
 var r_index = require('./routes/index');
 var r_users = require('./routes/users');
 var r_layers = require('./routes/layers');
+var r_login = require('./routes/login');
 
 var app = express();
 
@@ -27,7 +28,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/test', r_test);
 app.use('/', r_index);
 app.use('/users', r_users);
-app.use('/layers', r_layers)
+app.use('/layers', r_layers);
+app.use('/login', r_login);
 
 
 // catch 404 and forward to error handler
