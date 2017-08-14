@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>GEO-HDC</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="GIS">
+    <meta name="author" content="UTEHN J.">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+
+    <!-- Mapbox.js -->
+    <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
+
+
+</head>
+
+<body>
+
+
+
+
+    <div id="map"></div>
+
+
+
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+
+    <script>
+        $(function() {
+
+
+            L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
+            var map = L.mapbox.map('map').setView([16, 100], 9);
+
+
+            var osmStreet = L.mapbox.tileLayer('mapbox.streets').addTo(map);
+            var villLayer = L.mapbox.featureLayer('/test/json/11').addTo(map);
+            villLayer.on('ready', function(e) {
+                map.fitBounds(e.target.getBounds());
+                e.target.eachLayer(function(layer) {
+                    layer.bindPopup('ม.' + layer.feature.properties.VILL_NO + ' ' + layer.feature.properties.MUBAN);
+                });
+            });
+
+
+
+
+        });
+    </script>
+</body>
+
+</html>

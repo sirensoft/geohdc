@@ -10,10 +10,10 @@ var con_gis = mysql.createConnection(conn_gis_str);
 
 router.get('/hospital', (req, res) => {
     var sql = " SELECT h.hoscode,h.hosname,h.hostype,t.lat,t.lon FROM geojson t ";
-    sql += " INNER JOIN config c ON LEFT(t.areacode,2) = c.id";
+    sql += " INNER JOIN sys_config c ON LEFT(t.areacode,2) = c.provincecode";
     sql += " LEFT JOIN chospital h on h.hoscode = t.hcode ";
     sql += " WHERE t.areatype = 4 ";
-    con_gis.query(sql, (err, result, fields) => {
+    con_hdc.query(sql, (err, result, fields) => {
         var collection = {
             "type": "FeatureCollection",
             "features": []
@@ -40,6 +40,10 @@ router.get('/hospital', (req, res) => {
         res.json(collection);
 
     });
+
+});
+
+router.get('/r506/:code', (req, res) => {
 
 });
 
