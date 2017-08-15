@@ -6,4 +6,12 @@ router.get('/', (req, res) => {
     res.render('login');
 });
 
+router.post('/', (req, res, next) => {
+    if (req.body.username === 'admin') {
+        res.redirect('/');
+        return;
+    }
+    res.redirect('/login');
+});
+
 module.exports = router;

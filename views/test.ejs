@@ -47,13 +47,11 @@
     <script>
         $(function() {
 
-
             L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
             var map = L.mapbox.map('map').setView([16, 100], 9);
 
-
             var osmStreet = L.mapbox.tileLayer('mapbox.streets').addTo(map);
-            var villLayer = L.mapbox.featureLayer('/test/json/11').addTo(map);
+            var villLayer = L.mapbox.featureLayer('/test/json').addTo(map);
             villLayer.on('ready', function(e) {
                 map.fitBounds(e.target.getBounds());
                 e.target.eachLayer(function(layer) {
