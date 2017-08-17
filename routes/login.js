@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res, next) => {
-    if (req.body.username === 'admin') {
+    if (req.body.username === 'admin' && req.body.password === '123') {
         res.redirect('/');
         return;
     }

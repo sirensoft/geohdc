@@ -80,6 +80,18 @@ $(function() {
         });
     }); //end hospital ready
 
+    //village
+    var villLages = L.mapbox.featureLayer();
+    villLages.loadURL('/layers/village/6503').on('ready', function(e) {
+        e.target.eachLayer(function(layer) {
+            layer.setStyle({
+                icon: L.mapbox.marker.icon({ 'marker-symbol': 'warehouse' })
+            });
+        })
+    });
+
+    //end village
+
     //ขอบเขตการปกครอง
     var admin_boder = L.tileLayer.wms('http://tile.gistda.or.th/geoserver/wms', {
         layers: "flood:L0503_gistda_50k",
@@ -132,6 +144,7 @@ $(function() {
     L.control.layers(baseMap, {
         'โรงพยาบาล': hospitalLayer.addTo(map),
         'เขตการปกครอง': admin_boder.addTo(map),
+        'ที่ตั้งหมู่บ้าน': villLages,
         'น้ำท่วมขัง': flood_update,
         'เรดาห์น้ำฝน': rain
     }).addTo(map);
