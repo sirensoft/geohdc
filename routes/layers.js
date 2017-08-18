@@ -41,7 +41,7 @@ router.get('/hospital', (req, res) => {
 
     });
 
-});
+});// hospital
 
 router.get('/village/:p', (req, res) => {
     var p = req.params.p;
