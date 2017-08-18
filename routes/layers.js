@@ -10,10 +10,10 @@ var con_gis = mysql.createConnection(conn_gis_str);
 
 
 router.get('/hospital', (req, res) => {
-    var sql = "SELECT t.hoscode,t.hosname,t.hostype,t.lat,t.lon from chospital t ";    
-    sql+= " WHERE t.lat is not NULL";
-    sql+= " AND t.provcode = ?";
-    con_gis.query(sql,[config.provcode], (err, result, fields) => {
+    var sql = "SELECT t.hoscode,t.hosname,t.hostype,t.lat,t.lon from chospital t ";
+    sql += " WHERE t.lat is not NULL";
+    sql += " AND t.provcode = ?";
+    con_gis.query(sql, [config.provcode], (err, result, fields) => {
         var collection = {
             "type": "FeatureCollection",
             "features": []
@@ -41,7 +41,7 @@ router.get('/hospital', (req, res) => {
 
     });
 
-});// hospital
+}); // hospital
 
 router.get('/village/:p', (req, res) => {
     var p = req.params.p;
@@ -52,6 +52,14 @@ router.get('/village/:p', (req, res) => {
     });
     res.json(filtered);
 
+}); // village
+
+router.get('/house/:d', (req, res) => {
+    res.json({});
 });
+
+
+
+
 
 module.exports = router;

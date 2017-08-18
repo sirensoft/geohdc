@@ -8,10 +8,14 @@ var config = require('../config/config-main');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-   
-        res.render('index', { province: config.provname });
-   
 
+    res.render('index', { province: config.provname });
+
+
+});
+
+router.get('/about', (req, res) => {
+    res.render('about')
 });
 
 module.exports = router;
