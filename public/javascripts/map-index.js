@@ -82,11 +82,10 @@ $(function() {
 
     //village
     var villLages = L.mapbox.featureLayer();
-    villLages.loadURL('/layers/village/6503').on('ready', function(e) {
-        e.target.eachLayer(function(layer) {
-            layer.setStyle({
-                icon: L.mapbox.marker.icon({ 'marker-symbol': 'warehouse' })
-            });
+    villLages.loadURL('/layers/village/65').on('ready', function(e) {
+        var layers = e.target;
+        layers.eachLayer(function(layer) {
+          
         })
     });
 
