@@ -17,7 +17,7 @@ router.get('/pop-gis', (req, res) => {
         "type": "FeatureCollection",
         "features": []
     };
-    var sql = "select * from pop_tambon_gis";
+    var sql = "select * from gis_pop_tambon";
     con_gis.query(sql, function(err, result) {
         if (err) throw err;
         result.forEach(function(row) {
