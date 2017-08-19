@@ -10,6 +10,7 @@ var r_index = require('./routes/index');
 var r_users = require('./routes/users');
 var r_layers = require('./routes/layers');
 var r_login = require('./routes/login');
+var r_pop = require('./routes/pop');
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use('/', r_index);
 app.use('/users', r_users);
 app.use('/layers', r_layers);
 app.use('/login', r_login);
+app.use('/pop', r_pop);
 
 
 // catch 404 and forward to error handler

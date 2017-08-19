@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>GEO-HDC</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="GIS">
+    <meta name="author" content="UTEHN J.">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <link rel="stylesheet" href="./stylesheets/map.css"></link>
+
+    <!-- Mapbox.js -->
+    <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Jquery Ui -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+
+</head>
+
+<body>
+
+    <div class="container-fluid">
+
+        <div class="map-title">
+            <i class="fa fa-map-o" aria-hidden="true"></i> ประชากร
+        </div>
+        <div class="map-toolbar">
+            <button class="btn btn-sm btn-success">ตกลง</button>
+        </div>
+        <div id="map"></div>
+    </div>
+
+
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+
+    <script>
+        $(function() {
+
+            L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
+            var map = L.mapbox.map('map').setView([16, 100], 9);
+            //base-map
+            var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            });
+            var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}&hl=th', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            });
+            var googleStreet = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=th', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            });
+            var osmStreet = L.mapbox.tileLayer('mapbox.streets');
+
+            var baseMap = {
+                'OSM-ถนน': osmStreet.addTo(map),
+                'Google-ถนน': googleStreet,
+                'Google-ผสม': googleHybrid,
+                'Google-ดาวเทียม': googleSat,
+
+            };
+            //end-base
+
+            //pop
+            var layerTotalGroup = L.featureGroup();
+            var layerAggingGroup = L.featureGroup();
+            var pop = L.mapbox.featureLayer();
+            pop.loadURL('/pop/pop-gis').on('ready', function(e) {
+                var layerPop = e.target;
+                map.fitBounds(layerPop.getBounds());
+
+                layerPop.eachLayer(function(layer) {
+                    var pop = layer.feature.properties.TOTAL;
+                    var area_km = turf.area(layer.feature) / 1000000;
+                    var density = (pop / area_km).toFixed(2);
+
+                    layer.setStyle({
+                        'weigth': 1,
+                        'dashArray': 3,
+                        'fillColor': style(density)
+                    });
+                    layer.on('mouseover', function(e) {
+                        e.target.setStyle({
+                            'weight': 5
+                        });
+                    })
+                    layer.on('mouseout', function(e) {
+                        e.target.setStyle({
+                            'weight': 1,
+                            'dashArray': 3
+                        });
+                    })
+                    layer.addTo(layerTotalGroup);
+
+                }); // loop                
+
+            }); //ready total
+
+            var aging = L.mapbox.featureLayer();
+            aging.loadURL('/pop/pop-gis').on('ready', function(e) {
+                var layerAgging = e.target;
+
+                layerAgging.eachLayer(function(layer) {
+                    var pop = layer.feature.properties.AGGING;
+                    var area_km = turf.area(layer.feature) / 1000000;
+                    var density = (pop / area_km).toFixed(2);
+
+                    layer.setStyle({
+                        'weigth': 1,
+                        'dashArray': 3,
+                        'fillColor': style2(density)
+                    });
+                    layer.on('mouseover', function(e) {
+                        e.target.setStyle({
+                            'weight': 5
+                        });
+                    })
+                    layer.on('mouseout', function(e) {
+                        e.target.setStyle({
+                            'weight': 1,
+                            'dashArray': 3
+                        });
+                    })
+                    layer.addTo(layerAggingGroup);
+
+                }); // loop                
+            }); //ready aging
+
+            function style(a) {
+                if (a <= 100)
+                    return 'lime';
+                if (a < 500)
+                    return 'orangered';
+                if (a >= 500)
+                    return 'red';
+            }
+
+            function style2(a) {
+                if (a <= 50)
+                    return 'lime';
+                if (a < 100)
+                    return 'orangered';
+                if (a >= 100)
+                    return 'red';
+            }
+
+
+
+            L.control.layers(baseMap, {
+                'ประชากรทั้งหมด': layerTotalGroup.addTo(map),
+                'ประชากรอายุ 60 ปีขึ้นไป': layerAggingGroup
+            }).addTo(map);
+        });
+    </script>
+</body>
+
+</html>
