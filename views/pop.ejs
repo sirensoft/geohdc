@@ -54,6 +54,7 @@
 
             L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
             var map = L.mapbox.map('map').setView([16, 100], 9);
+            var hash = L.hash(map);
             //base-map
             var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
                 maxZoom: 20,
@@ -91,6 +92,15 @@
                     var area_km = turf.area(layer.feature) / 1000000;
                     var density = (pop / area_km).toFixed(2);
 
+                    var area_name = "ต." + layer.feature.properties.TAM_NAMT;
+                    area_name += " อ." + layer.feature.properties.AMPUR;
+                    area_name += " จ." + layer.feature.properties.CHANGWAT;
+
+                    var popup = "<p><b>" + area_name + "</b>";
+                    popup += "<p>พื้นที่ <b>" + area_km.toFixed(2) + "</b> ตร.กม.";
+                    popup += "<p>ประชากร <b>" + pop.toLocaleString() + "</b> คน";
+                    popup += "<p>ความหนาแน่น <b>" + density.toLocaleString() + "</b> คน/ตร.กม.";
+                    layer.bindPopup(popup);
                     layer.setStyle({
                         'weigth': 1,
                         'dashArray': 3,
@@ -118,14 +128,24 @@
                 var layerAgging = e.target;
 
                 layerAgging.eachLayer(function(layer) {
-                    var pop = layer.feature.properties.AGGING;
-                    var area_km = turf.area(layer.feature) / 1000000;
-                    var density = (pop / area_km).toFixed(2);
+                    var agging = layer.feature.properties.AGGING;
+                    var pop = layer.feature.properties.TOTAL;
+                    var rate = (agging * 100 / pop).toFixed(2);
 
+                    var area_name = "ต." + layer.feature.properties.TAM_NAMT;
+                    area_name += " อ." + layer.feature.properties.AMPUR;
+                    area_name += " จ." + layer.feature.properties.CHANGWAT;
+
+                    var popup = "<p><b>" + area_name + "</b>";
+
+                    popup += "<p>ประชากรทั้งหมด <b>" + pop.toLocaleString() + "</b> คน";
+                    popup += "<p>ประชากรสูงอายุ <b>" + agging.toLocaleString() + "</b> คน";
+                    popup += "<p>อัตราส่วน <b>" + rate.toLocaleString() + " ต่อ 100</b> ";
+                    layer.bindPopup(popup);
                     layer.setStyle({
                         'weigth': 1,
                         'dashArray': 3,
-                        'fillColor': style2(density)
+                        'fillColor': style2(rate)
                     });
                     layer.on('mouseover', function(e) {
                         e.target.setStyle({
@@ -153,11 +173,11 @@
             }
 
             function style2(a) {
-                if (a <= 50)
+                if (a <= 20)
                     return 'lime';
-                if (a < 100)
+                if (a < 50)
                     return 'orangered';
-                if (a >= 100)
+                if (a >= 50)
                     return 'red';
             }
 
@@ -165,7 +185,7 @@
 
             L.control.layers(baseMap, {
                 'ประชากรทั้งหมด': layerTotalGroup.addTo(map),
-                'ประชากรอายุ 60 ปีขึ้นไป': layerAggingGroup
+                'ประชากรผู้อายุ60ปีขึ้นไป': layerAggingGroup
             }).addTo(map);
         });
     </script>
