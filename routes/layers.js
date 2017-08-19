@@ -12,8 +12,8 @@ var con_gis = mysql.createConnection(conn_gis_str);
 router.get('/hospital', (req, res) => {
     var sql = "SELECT t.hoscode,t.hosname,t.hostype,t.lat,t.lon from chospital t ";
     sql += " WHERE t.lat is not NULL";
-    sql += " AND t.provcode = ?";
-    con_gis.query(sql, [config.provcode], (err, result, fields) => {
+    sql += " AND left(concat(t.provcode,t.distcode),?) = ?";
+    con_gis.query(sql, [config.areacode.length, config.areacode], (err, result, fields) => {
         var collection = {
             "type": "FeatureCollection",
             "features": []
@@ -43,20 +43,75 @@ router.get('/hospital', (req, res) => {
 
 }); // hospital
 
-router.get('/village/:p', (req, res) => {
-    var p = req.params.p;
+router.get('/mooban', (req, res) => {
 
-    var array = villages.features;
-    var filtered = array.filter(function(feature) {
-        return p.length >= 2 && feature.properties.DOLACODE.substring(0, p.length) === p;
+    var collection = {
+        "type": "FeatureCollection",
+        "features": []
+    };
+    var sql = " select * from cmooban_gis where left(vill_code,?)=? order by vill_code asc";
+    con_gis.query(sql, [config.areacode.length, config.areacode], (err, result) => {
+            if (err) throw err;
+            result.forEach(function(row) {
+                collection.features.push({
+                    type: 'Feature',
+                    properties: {
+                        vill_code: row.vill_code,
+                        vill_no: row.vill_no,
+                        vill_name: row.vill_name,
+                        tambon: row.tambon,
+                        amphur: row.amphur,
+                        changwat: row.changwat,
+                        'marker-symbol': 'village',
+                        'marker-size': 'small',
+                        'marker-color': '#DEB887',
+                        title: 'ม.' + row.vill_no + ' ' + row.vill_name + ' ต.' + row.tambon
+                    },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [row.lon * 1, row.lat * 1]
+                    }
+                });
+            }); //loop
+            res.json(collection);
+
+        }) //query
+
+
+}); // mooban
+
+// tambon
+router.get('/tambon', (req, res) => {
+    var collection = {
+        "type": "FeatureCollection",
+        "features": []
+    };
+    var sql = "select * from ctambon_gis where left(fullcode,?) = ?";
+    con_gis.query(sql, [config.areacode.length, config.areacode], (err, result) => {
+        if (err) throw err;
+        result.forEach(function(row) {
+            collection.features.push({
+                type: 'Feature',
+                properties: {
+                    "FULLCODE": row.FULLCODE,
+                    "TAM_NAMT": row.TAM_NAMT,
+                    "AMPUR": row.AMPUR,
+                    "CHANGWAT": row.CHANGWAT,
+                },
+                geometry: {
+                    type: 'Multipolygon',
+                    coordinates: JSON.parse(row.COORDINATES)
+                }
+            });
+        });
+        res.json(collection);
     });
-    res.json(filtered);
+}); //tambon
 
-}); // village
-
+//house
 router.get('/house/:d', (req, res) => {
     res.json({});
-});
+}); //house
 
 
 
