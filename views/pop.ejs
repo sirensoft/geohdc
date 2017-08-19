@@ -187,6 +187,64 @@
                 'ประชากรทั้งหมด': layerTotalGroup.addTo(map),
                 'ประชากรผู้อายุ60ปีขึ้นไป': layerAggingGroup
             }).addTo(map);
+
+            //legand
+
+            var legend_pop = L.control({
+                position: 'topright'
+            });
+            legend_pop.onAdd = function(map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                var labels = ['<b>คำอธิบาย</b>'];
+
+                labels.push('<i style="background:lime"></i>0 - 100 คน:ตร.กม.');
+                labels.push('<i style="background:orangered"></i>101 - 499 คน:ตร.กม.');
+                labels.push('<i style="background:red"></i>มากว่าเท่ากับ 500 คน:ตร.กม. ');
+                labels.push('');
+                labels.push('<u>แหล่งข้อมูล</u>');
+                labels.push('จากการสำรวจของหน่วยบริการ');
+                labels.push('เฉพาะประชากรที่ยังมีชีวิตอยู่');
+                div.innerHTML = labels.join('<br>');
+                return div;
+            };
+            legend_pop.addTo(map);
+
+
+            var legend_agging = L.control({
+                position: 'topright'
+            });
+            legend_agging.onAdd = function(map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                var labels = ['<b>คำอธิบาย</b>'];
+
+                labels.push('<i style="background:lime"></i>อัตราส่วน 0 - 20');
+                labels.push('<i style="background:orangered"></i>อัตราส่วน 21 - 49');
+                labels.push('<i style="background:red"></i>อัตราส่วน 50 ขึ้นไป');
+                labels.push('');
+                labels.push('<u>แหล่งข้อมูล</u>');
+                labels.push('จากการสำรวจของหน่วยบริการ');
+                labels.push('เฉพาะผู้สูงอายุที่ยังมีชีวิตอยู่');
+                div.innerHTML = labels.join('<br>');
+                return div;
+            };
+            //legend_pop.addTo(map);
+
+            map.on('overlayadd', function(e) {
+                if (e.name === 'ประชากรทั้งหมด') {
+                    legend_pop.addTo(map);
+                }
+                if (e.name === 'ประชากรผู้อายุ60ปีขึ้นไป') {
+                    legend_agging.addTo(map);
+                }
+            });
+            map.on('overlayremove', function(e) {
+                if (e.name === 'ประชากรทั้งหมด') {
+                    legend_pop.remove();
+                }
+                if (e.name === 'ประชากรผู้อายุ60ปีขึ้นไป') {
+                    legend_agging.remove();
+                }
+            })
         });
     </script>
 </body>
