@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mysql = require('mysql');
 
 var r_test = require('./routes/test');
 var r_index = require('./routes/index');
@@ -51,5 +52,30 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
+
+var connection;
+var db_config = require('./config/connect-gis');
+
+function handleDisconnect() {
+    connection = mysql.createConnection(db_config);
+
+
+    connection.connect(function(err) {
+        if (err) {
+            console.log('error when connecting to db:', err);
+            setTimeout(handleDisconnect, 1000);
+        }
+    });
+    connection.on('error', function(err) {
+        console.log('db error', err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            handleDisconnect();
+        } else {
+            throw err;
+        }
+    });
+};
+
+handleDisconnect();
 
 module.exports = app;

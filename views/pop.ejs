@@ -184,6 +184,8 @@
             L.control.layers(baseMap, {
                 'ประชากรทั้งหมด': layerTotalGroup.addTo(map),
                 'ประชากรผู้อายุ60ปีขึ้นไป': layerAggingGroup
+            }, {
+                collapsed: false
             }).addTo(map);
 
             //legand
