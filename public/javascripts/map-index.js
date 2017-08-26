@@ -144,4 +144,26 @@ $(function() {
         'น้ำท่วมขัง': flood_update,
         'เรดาห์น้ำฝน': rain
     }).addTo(map);
-});
+
+    var calDirection = function(origin, destination, color) {
+        direction(origin, destination).then(function(result) {
+            var json_line = polyline.toGeoJSON(result.route);
+            var layer_line = L.mapbox.featureLayer();
+            layer_line.remove();
+            layer_line.setGeoJSON(json_line)
+                .setStyle({
+                    weight: 5,
+                    color: color
+                }).addTo(map)
+            var pop = result.descript.distance + " ," + result.descript.duration;
+            layer_line.bindPopup(pop);
+
+        }, function(err) {
+            alert(err)
+        });
+    };
+
+    calDirection('16,100', '16.3255,100', 'red');
+    calDirection('16,100.1456', '16.3255,100.1478', 'green');
+
+}); //end page Ready
