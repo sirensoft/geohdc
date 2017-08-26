@@ -1,6 +1,59 @@
 $(function() {
     L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
-    var map = L.mapbox.map('map').setView([16, 100], 9);
+    var A, B;
+    var layer_line = L.mapbox.featureLayer();
+
+    
+    var contextmenu = {
+        contextmenu: true,
+        contextmenuWidth: 140,
+        contextmenuItems: [{
+            text: 'A',
+            callback: function(e) {
+                if (A) {
+                    A.remove();
+                }
+                A = L.marker(e.latlng, {
+                    'draggable': true,
+                    icon: L.mapbox.marker.icon({
+                        'marker-symbol': 'a'
+                    })
+
+                }).addTo(map);
+            }
+        }, {
+            text: 'B',
+            callback: function(e) {
+                if (!A) {
+                    return;
+                }
+                if (B) {
+                    B.remove();
+                }
+                B = L.marker(e.latlng, {
+                    'draggable': true,
+                    icon: L.mapbox.marker.icon({
+                        'marker-symbol': 'b'
+                    })
+                }).addTo(map);
+                var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
+                var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
+                calDirection(from, to, 'blue');
+                A.on('dragend',function(e){
+                    var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
+                    var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
+                    calDirection(from, to, 'blue');
+                });
+                B.on('dragend',function(e){
+                    var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
+                    var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
+                    calDirection(from, to, 'blue');
+                });
+            }
+        }]
+    };
+
+    var map = L.mapbox.map('map', null, contextmenu).setView([16, 100], 9);
     var hash = L.hash(map);
 
     //base-map
@@ -145,25 +198,24 @@ $(function() {
         'เรดาห์น้ำฝน': rain
     }).addTo(map);
 
-    var calDirection = function(origin, destination, color) {
-        direction(origin, destination).then(function(result) {
-            var json_line = polyline.toGeoJSON(result.route);
-            var layer_line = L.mapbox.featureLayer();
-            layer_line.remove();
-            layer_line.setGeoJSON(json_line)
-                .setStyle({
-                    weight: 5,
-                    color: color
-                }).addTo(map)
-            var pop = result.descript.distance + " ," + result.descript.duration;
-            layer_line.bindPopup(pop);
+//direction
 
-        }, function(err) {
-            alert(err)
-        });
-    };
+var calDirection = function(origin, destination, color) {
+    direction(origin, destination).then(function(result) {
+        var json_line = polyline.toGeoJSON(result.route);
+        layer_line.remove();
+        layer_line.setGeoJSON(json_line)
+            .setStyle({
+                weight: 5,
+                color: color
+            }).addTo(map)
+        var pop = result.descript.distance + " ," + result.descript.duration;
+        layer_line.bindPopup(pop);
 
-    calDirection('16,100', '16.3255,100', 'red');
-    calDirection('16,100.1456', '16.3255,100.1478', 'green');
+    }, function(err) {
+        console.log('direction:' + err);
+    });
+};
+
 
 }); //end page Ready
