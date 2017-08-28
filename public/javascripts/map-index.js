@@ -3,8 +3,9 @@ $(function() {
     var A, B;
     var layer_line = L.mapbox.featureLayer();
 
-    
-    var contextmenu = {
+
+    var options = {
+        fullscreenControl: true,
         contextmenu: true,
         contextmenuWidth: 140,
         contextmenuItems: [{
@@ -12,6 +13,10 @@ $(function() {
             callback: function(e) {
                 if (A) {
                     A.remove();
+                    layer_line.remove();
+                }
+                if (B) {
+                    B.remove();
                 }
                 A = L.marker(e.latlng, {
                     'draggable': true,
@@ -39,21 +44,23 @@ $(function() {
                 var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
                 var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
                 calDirection(from, to, 'blue');
-                A.on('dragend',function(e){
+                A.on('dragend', function(e) {
                     var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
                     var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
                     calDirection(from, to, 'blue');
                 });
-                B.on('dragend',function(e){
+                B.on('dragend', function(e) {
                     var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
                     var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
                     calDirection(from, to, 'blue');
                 });
             }
+        }, {
+            text: '<hr/>'
         }]
     };
 
-    var map = L.mapbox.map('map', null, contextmenu).setView([16, 100], 9);
+    var map = L.mapbox.map('map', null, options).setView([16, 100], 9);
     var hash = L.hash(map);
 
     //base-map
@@ -198,24 +205,24 @@ $(function() {
         'เรดาห์น้ำฝน': rain
     }).addTo(map);
 
-//direction
+    //direction
 
-var calDirection = function(origin, destination, color) {
-    direction(origin, destination).then(function(result) {
-        var json_line = polyline.toGeoJSON(result.route);
-        layer_line.remove();
-        layer_line.setGeoJSON(json_line)
-            .setStyle({
-                weight: 5,
-                color: color
-            }).addTo(map)
-        var pop = result.descript.distance + " ," + result.descript.duration;
-        layer_line.bindPopup(pop);
+    var calDirection = function(origin, destination, color) {
+        direction(origin, destination).then(function(result) {
+            var json_line = polyline.toGeoJSON(result.route);
+            layer_line.remove();
+            layer_line.setGeoJSON(json_line)
+                .setStyle({
+                    weight: 5,
+                    color: color
+                }).addTo(map)
+            var pop = result.descript.distance + " ," + result.descript.duration;
+            layer_line.bindPopup(pop);
 
-    }, function(err) {
-        console.log('direction:' + err);
-    });
-};
+        }, function(err) {
+            console.log('direction:' + err);
+        });
+    };
 
 
 }); //end page Ready
