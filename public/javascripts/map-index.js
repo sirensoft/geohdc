@@ -76,14 +76,20 @@ $(function() {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
     });
+    var googleTerain = L.tileLayer('http://{s}.google.com/vt/lyrs=t&x={x}&y={y}&z={z}&hl=th', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    });
+
     var osmStreet = L.mapbox.tileLayer('mapbox.streets');
 
     var baseMap = {
         'OSM-ถนน': osmStreet,
-        'Google-ถนน': googleStreet.addTo(map),
+        'Google-ถนน': googleStreet,
         'Google-ผสม': googleHybrid,
         'Google-ดาวเทียม': googleSat,
-        //'ไม่แสดง': {}
+        'Google-ภูมิประเทศ': googleTerain.addTo(map)
+            //'ไม่แสดง': {}
 
     };
     //end-base
