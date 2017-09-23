@@ -3,103 +3,254 @@
 
 <head>
     <title>GEO-HDC</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="GIS">
-    <meta name="author" content="UTEHN J.">
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <link rel="stylesheet" href="./stylesheets/style.css" />
-
-
-
-    <!-- Map -->
-    <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
-    <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbiMiQFGG0YZrDP--XiSr45tPtizB3e84"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-contextmenu/1.4.0/leaflet.contextmenu.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-contextmenu/1.4.0/leaflet.contextmenu.min.js"></script>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous" />
-
-    <!-- Jquery Ui -->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-
-
+    <% include ./partials/head %>
 </head>
 
 <body>
-    <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsGisDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-        <a class="navbar-brand" href="#">GEO-HDC <%=areaname%></a>
-
-        <div class="collapse navbar-collapse" id="navbarsGisDefault">
-            <ul class="navbar-nav mr-auto">
+    <% include ./partials/navbar %>
 
 
-                <li class="nav-item dropdown active">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown00" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">เฝ้าระวังโรคติดต่อ</a>
-                    <div class="dropdown-menu" aria-labelledby="dropdown00">
-                        <a class="dropdown-item" href="#">โรคไข้เลือดออก</a>
-                        <a class="dropdown-item" href="#">โรคอุจาระร่วง</a>
-                        <a class="dropdown-item" href="#">โรคเลปโตสไปโรซิส</a>
-                        <a class="dropdown-item" href="#">โรคพิษสุนัขบ้า</a>
-                        <a class="dropdown-item" href="#">โรควัณโรค</a>
-                        <a class="dropdown-item" href="#">โรคไข้หวัดใหญ่</a>
-                    </div>
-
-                </li>
-
-                <li class="nav-item dropdown active">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ข้อมูลสุขภาพ</a>
-                    <div class="dropdown-menu" aria-labelledby="dropdown01">
-                        <a class="dropdown-item" href="#" onclick="javascript:openPop('/pop',100);">ประชากร</a>
-                    </div>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="#" onclick="javascript:openPop('/about',60);">เกี่ยวกับ</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/login">เข้าระบบ</a>
-                </li>
-            </ul>
-            <form class="form-inline my-2 my-lg-0" id="frm-find-hos">
-                <input class="form-control mr-sm-2" type="text" id='txt-find-hos' placeholder="ค้นหาโรงพยาบาล">
-                <button class="btn btn-outline-success my-2 my-sm-0" id='btn-find-hos' type="submit">ค้นหา</button>
-            </form>
+        <div class="container-fluid">
+            <div id="map"></div>
         </div>
-    </nav>
+
+        <% include ./partials/lib %>
+            <script>
+                $(function() {
+                    L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
+                    var A, B;
+                    var layer_line = L.mapbox.featureLayer();
 
 
-    <div class="container-fluid">
-        <div id="map"></div>
-    </div>
+                    var options = {
+                        fullscreenControl: true,
+                        contextmenu: true,
+                        contextmenuWidth: 140,
+                        contextmenuItems: [{
+                            text: 'A',
+                            callback: function(e) {
+                                if (A) {
+                                    A.remove();
+                                    layer_line.remove();
+                                }
+                                if (B) {
+                                    B.remove();
+                                }
+                                A = L.marker(e.latlng, {
+                                    'draggable': true,
+                                    icon: L.mapbox.marker.icon({
+                                        'marker-symbol': 'a'
+                                    })
+
+                                }).addTo(map);
+                            }
+                        }, {
+                            text: 'B',
+                            callback: function(e) {
+                                if (!A) {
+                                    return;
+                                }
+                                if (B) {
+                                    B.remove();
+                                }
+                                B = L.marker(e.latlng, {
+                                    'draggable': true,
+                                    icon: L.mapbox.marker.icon({
+                                        'marker-symbol': 'b'
+                                    })
+                                }).addTo(map);
+                                var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
+                                var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
+                                calDirection(from, to, 'blue');
+                                A.on('dragend', function(e) {
+                                    var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
+                                    var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
+                                    calDirection(from, to, 'blue');
+                                });
+                                B.on('dragend', function(e) {
+                                    var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
+                                    var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
+                                    calDirection(from, to, 'blue');
+                                });
+                            }
+                        }, {
+                            text: '<hr/>'
+                        }]
+                    };
+
+                    var map = L.mapbox.map('map', null, options).setView([16, 100], 9);
+                    var hash = L.hash(map);
+
+                    //base-map
+                    var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    });
+                    var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}&hl=th', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    });
+                    var googleStreet = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=th', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    });
+                    var googleTerain = L.tileLayer('http://{s}.google.com/vt/lyrs=t&x={x}&y={y}&z={z}&hl=th', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    });
+
+                    var osmStreet = L.mapbox.tileLayer('mapbox.streets');
+
+                    var baseMap = {
+                        'OSM-ถนน': osmStreet,
+                        'Google-ถนน': googleStreet,
+                        'Google-ผสม': googleHybrid,
+                        'Google-ดาวเทียม': googleSat,
+                        'Google-ภูมิประเทศ': googleTerain.addTo(map)
+                            //'ไม่แสดง': {}
+
+                    };
+                    //end-base
+
+                    var availableTags = [];
+                    $('#txt-find-hos').click(function(e) {
+                        $(this).select();
+                    });
+
+                    //hospital
+                    var hospitalLayer = L.featureGroup();
+                    var hos_data = L.mapbox.featureLayer();
+                    hos_data.loadURL('/layers/hospital').on('ready', (e) => {
+                        map.fitBounds(e.target.getBounds());
+                        e.target.eachLayer((layer) => {
+                            var hosname = layer.feature.properties.hosname;
+                            availableTags.push(hosname);
+                            layer.bindPopup(hosname);
+                            if (layer.feature.properties.hostype === '05') {
+                                layer.setIcon(L.mapbox.marker.icon({
+                                    'marker-size': 'large',
+                                    'marker-symbol': 'h',
+                                    'marker-color': '#B22222'
+                                }));
+                            }
+                            if (layer.feature.properties.hostype === '07') {
+                                layer.setIcon(L.mapbox.marker.icon({
+                                    'marker-size': 'medium',
+                                    'marker-symbol': 'h',
+                                    'marker-color': '#32CD32'
+                                }));
+                            }
+                            layer.addTo(hospitalLayer);
+                        });
+
+                        $("#txt-find-hos").autocomplete({
+                            source: availableTags
+                        })
 
 
-    <!-- jQuery first, then Tether, then Bootstrap JS. -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+                        $('#frm-find-hos').submit((e) => {
+                            //$('#navbarsGisDefault').toggle();
+                            var find = $('#txt-find-hos').val();
+                            hos_data.eachLayer((layer) => {
+                                if (layer.feature.properties.hosname === find) {
+                                    map.setZoom(16);
+                                    map.panTo(layer.getLatLng());
+                                    layer.openPopup();
 
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+                                    return;
+                                }
+                            });
 
-    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
-    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+                        });
+                    }); //end hospital ready
+
+                    //mooban
+                    var mooban = L.mapbox.featureLayer();
+                    mooban.loadURL('/layers/mooban');
+
+                    //mooban
 
 
 
-    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
-    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
-    <script src='./javascripts/polyline.js'></script>
+                    //ขอบเขตการปกครอง
+                    var admin_boder = L.tileLayer.wms('http://tile.gistda.or.th/geoserver/wms', {
+                        layers: "flood:L0503_gistda_50k",
+                        transparent: true,
+                        format: 'image/png',
+                        tiles: true,
+                        attribution: 'GISTDA @ Copyright 2016',
 
-    <script src="./javascripts/map-index.js"></script>
-    <script src="./javascripts/func.js"></script>
-    <script src="./javascripts/direction.js"></script>
+                    });
+
+                    //แผนที่น้ำท่วมรอบ 7 วัน
+                    var flood_update = L.tileLayer.wms('http://tile.gistda.or.th/geoserver/flood/wms', {
+                        layers: "floodarea_tambon",
+                        transparent: true,
+                        format: 'image/png',
+                        tiles: true,
+                        attribution: 'GISTDA @ Copyright 2016',
+
+                    });
+
+                    //ฝน
+                    var rain = L.layerGroup();
+                    var base_url = 'http://rain.tvis.in.th/';
+                    var radar = 'NongKham';
+                    var radars = '["NongKham","KKN","PHS","CRI","UBN","OMK"]';
+                    var latlng_topright = '["15.09352819610486,101.7458188486135","18.793550,105.026265","19.094393,102.475537","22.305437,102.143387","17.558854,107.095363","19.904425,100.770048"]';
+                    var latlng_bottomleft = '["12.38196058009694,98.97206140040996","14.116192,100.541459","14.411350,97.983591","17.596297,97.611690","12.918883,102.646771","15.630408,96.114592"]';
+                    var d = new Date();
+                    var time = d.getTime();
+                    //console.log(time);
+                    radars = JSON.parse(radars);
+                    latlng_topright = JSON.parse(latlng_topright);
+                    latlng_bottomleft = JSON.parse(latlng_bottomleft);
+                    var urllast;
+                    var boundlast;
+                    $.each(radars, function(key, value) {
+                        var top_right = latlng_topright[key].split(",");
+                        var bottom_left = latlng_bottomleft[key].split(",");
+
+                        var imageUrl = base_url + "/output/" + value + ".png?" + time,
+                            imageBounds = [
+                                [top_right[0], top_right[1]],
+                                [bottom_left[0], bottom_left[1]]
+                            ];
+                        L.imageOverlay(imageUrl, imageBounds).addTo(rain).setOpacity(0.95);
+                    });
+                    //จบฝน
+
+
+                    L.control.layers(baseMap, {
+                        'โรงพยาบาล': hospitalLayer.addTo(map),
+                        'ที่ตั้งหมู่บ้าน': mooban,
+                        'เขตการปกครอง': admin_boder.addTo(map),
+                        'น้ำท่วมขัง': flood_update,
+                        'เรดาห์น้ำฝน': rain
+                    }).addTo(map);
+
+                    //direction
+
+                    var calDirection = function(origin, destination, color) {
+                        direction(origin, destination).then(function(result) {
+                            var json_line = polyline.toGeoJSON(result.route);
+                            layer_line.remove();
+                            layer_line.setGeoJSON(json_line)
+                                .setStyle({
+                                    weight: 5,
+                                    color: color
+                                }).addTo(map)
+                            var pop = result.descript.distance + " ," + result.descript.duration;
+                            layer_line.bindPopup(pop);
+
+                        }, function(err) {
+                            console.log('direction:' + err);
+                        });
+                    };
+
+
+                }); //end page Ready
+            </script>
 
 
 </body>

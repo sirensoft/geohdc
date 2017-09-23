@@ -2,257 +2,223 @@
 <html lang="en">
 
 <head>
-    <title>GEO-HDC</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="GIS">
-    <meta name="author" content="UTEHN J.">
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <link rel="stylesheet" href="./stylesheets/map.css"></link>
-
-    <!-- Mapbox.js -->
-    <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
-    <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
-
-    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
-    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous" />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- Jquery Ui -->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-
+    <title>POP</title>
+    <% include ./partials/head %>
 </head>
 
 <body>
+    <% include ./partials/navbar %>
 
-    <div class="container-fluid">
 
-        <div class="map-title">
-            <i class="fa fa-map-o" aria-hidden="true"></i> ประชากร
+        <div class="container-fluid">
+            <div id="map"></div>
         </div>
+        <% include ./partials/lib %>
 
-        <div id="map" style="height: 92vh;"></div>
-    </div>
+            <script>
+                $(function() {
 
-
-    <!-- jQuery first, then Tether, then Bootstrap JS. -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-
-    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
-    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
-
-    <script>
-        $(function() {
-
-            L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
-            var map = L.mapbox.map('map', null, {
-                fullscreenControl: true,
-            }).setView([16, 100], 9);
-            var hash = L.hash(map);
-            //base-map
-            var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                maxZoom: 20,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-            });
-            var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}&hl=th', {
-                maxZoom: 20,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-            });
-            var googleStreet = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=th', {
-                maxZoom: 20,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-            });
-            var osmStreet = L.mapbox.tileLayer('mapbox.streets');
-
-            var baseMap = {
-                'OSM-ถนน': osmStreet.addTo(map),
-                'Google-ถนน': googleStreet,
-                'Google-ผสม': googleHybrid,
-                'Google-ดาวเทียม': googleSat,
-
-            };
-            //end-base
-
-            //pop
-            var layerTotalGroup = L.featureGroup();
-            var layerAggingGroup = L.featureGroup();
-            var pop = L.mapbox.featureLayer();
-            pop.loadURL('/pop/pop-gis').on('ready', function(e) {
-                var layerPop = e.target;
-                map.fitBounds(layerPop.getBounds());
-
-                layerPop.eachLayer(function(layer) {
-                    var pop = layer.feature.properties.TOTAL;
-                    var area_km = turf.area(layer.feature) / 1000000;
-                    var density = (pop / area_km).toFixed(2);
-
-                    var area_name = "ต." + layer.feature.properties.TAM_NAMT;
-                    area_name += " อ." + layer.feature.properties.AMPUR;
-                    area_name += " จ." + layer.feature.properties.CHANGWAT;
-
-                    var popup = "<p><b>" + area_name + "</b>";
-                    popup += "<p>พื้นที่ <b>" + area_km.toFixed(2) + "</b> ตร.กม.";
-                    popup += "<p>ประชากร <b>" + pop.toLocaleString() + "</b> คน";
-                    popup += "<p>ความหนาแน่น <b>" + density.toLocaleString() + "</b> คน/ตร.กม.";
-                    layer.bindPopup(popup);
-                    layer.setStyle({
-                        'weigth': 1,
-                        'dashArray': 3,
-                        'fillColor': style(density)
+                    L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
+                    var map = L.mapbox.map('map', null, {
+                        fullscreenControl: true,
+                    }).setView([16, 100], 9);
+                    var hash = L.hash(map);
+                    //base-map
+                    var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
                     });
-                    layer.on('mouseover', function(e) {
-                        e.target.setStyle({
-                            'weight': 5
-                        });
-                    })
-                    layer.on('mouseout', function(e) {
-                        e.target.setStyle({
-                            'weight': 1,
-                            'dashArray': 3
-                        });
-                    })
-                    layer.addTo(layerTotalGroup);
-
-                }); // loop                
-
-            }); //ready total
-
-            var aging = L.mapbox.featureLayer();
-            aging.loadURL('/pop/pop-gis').on('ready', function(e) {
-                var layerAgging = e.target;
-
-                layerAgging.eachLayer(function(layer) {
-                    var agging = layer.feature.properties.AGGING;
-                    var pop = layer.feature.properties.TOTAL;
-                    var rate = (agging * 100 / pop).toFixed(2);
-
-                    var area_name = "ต." + layer.feature.properties.TAM_NAMT;
-                    area_name += " อ." + layer.feature.properties.AMPUR;
-                    area_name += " จ." + layer.feature.properties.CHANGWAT;
-
-                    var popup = "<p><b>" + area_name + "</b>";
-
-                    popup += "<p>ประชากรทั้งหมด <b>" + pop.toLocaleString() + "</b> คน";
-                    popup += "<p>ผู้สูงอายุ <b>" + agging.toLocaleString() + "</b> คน";
-                    popup += "<p>อัตราส่วน <b>" + rate.toLocaleString() + " ต่อ 100</b> ";
-                    layer.bindPopup(popup);
-                    layer.setStyle({
-                        'weigth': 1,
-                        'dashArray': 3,
-                        'fillColor': style2(rate)
+                    var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}&hl=th', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
                     });
-                    layer.on('mouseover', function(e) {
-                        e.target.setStyle({
-                            'weight': 5
-                        });
-                    })
-                    layer.on('mouseout', function(e) {
-                        e.target.setStyle({
-                            'weight': 1,
-                            'dashArray': 3
-                        });
-                    })
-                    layer.addTo(layerAggingGroup);
+                    var googleStreet = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=th', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    });
+                    var osmStreet = L.mapbox.tileLayer('mapbox.streets');
 
-                }); // loop                
-            }); //ready aging
+                    var baseMap = {
+                        'OSM-ถนน': osmStreet.addTo(map),
+                        'Google-ถนน': googleStreet,
+                        'Google-ผสม': googleHybrid,
+                        'Google-ดาวเทียม': googleSat,
 
-            function style(a) {
-                if (a <= 100)
-                    return 'lime';
-                if (a < 500)
-                    return 'orangered';
-                if (a >= 500)
-                    return 'red';
-            }
+                    };
+                    //end-base
 
-            function style2(a) {
-                if (a <= 20)
-                    return 'lime';
-                if (a < 50)
-                    return 'orangered';
-                if (a >= 50)
-                    return 'red';
-            }
+                    //pop
+                    var layerTotalGroup = L.featureGroup();
+                    var layerAggingGroup = L.featureGroup();
+                    var pop = L.mapbox.featureLayer();
+                    pop.loadURL('/pop/pop-gis').on('ready', function(e) {
+                        var layerPop = e.target;
+                        map.fitBounds(layerPop.getBounds());
+
+                        layerPop.eachLayer(function(layer) {
+                            var pop = layer.feature.properties.TOTAL;
+                            var area_km = turf.area(layer.feature) / 1000000;
+                            var density = (pop / area_km).toFixed(2);
+
+                            var area_name = "ต." + layer.feature.properties.TAM_NAMT;
+                            area_name += " อ." + layer.feature.properties.AMPUR;
+                            area_name += " จ." + layer.feature.properties.CHANGWAT;
+
+                            var popup = "<p><b>" + area_name + "</b>";
+                            popup += "<p>พื้นที่ <b>" + area_km.toFixed(2) + "</b> ตร.กม.";
+                            popup += "<p>ประชากร <b>" + pop.toLocaleString() + "</b> คน";
+                            popup += "<p>ความหนาแน่น <b>" + density.toLocaleString() + "</b> คน/ตร.กม.";
+                            layer.bindPopup(popup);
+                            layer.setStyle({
+                                'weigth': 1,
+                                'dashArray': 3,
+                                'fillColor': style(density)
+                            });
+                            layer.on('mouseover', function(e) {
+                                e.target.setStyle({
+                                    'weight': 5
+                                });
+                            })
+                            layer.on('mouseout', function(e) {
+                                e.target.setStyle({
+                                    'weight': 1,
+                                    'dashArray': 3
+                                });
+                            })
+                            layer.addTo(layerTotalGroup);
+
+                        }); // loop                
+
+                    }); //ready total
+
+                    var aging = L.mapbox.featureLayer();
+                    aging.loadURL('/pop/pop-gis').on('ready', function(e) {
+                        var layerAgging = e.target;
+
+                        layerAgging.eachLayer(function(layer) {
+                            var agging = layer.feature.properties.AGGING;
+                            var pop = layer.feature.properties.TOTAL;
+                            var rate = (agging * 100 / pop).toFixed(2);
+
+                            var area_name = "ต." + layer.feature.properties.TAM_NAMT;
+                            area_name += " อ." + layer.feature.properties.AMPUR;
+                            area_name += " จ." + layer.feature.properties.CHANGWAT;
+
+                            var popup = "<p><b>" + area_name + "</b>";
+
+                            popup += "<p>ประชากรทั้งหมด <b>" + pop.toLocaleString() + "</b> คน";
+                            popup += "<p>ผู้สูงอายุ <b>" + agging.toLocaleString() + "</b> คน";
+                            popup += "<p>อัตราส่วน <b>" + rate.toLocaleString() + " ต่อ 100</b> ";
+                            layer.bindPopup(popup);
+                            layer.setStyle({
+                                'weigth': 1,
+                                'dashArray': 3,
+                                'fillColor': style2(rate)
+                            });
+                            layer.on('mouseover', function(e) {
+                                e.target.setStyle({
+                                    'weight': 5
+                                });
+                            })
+                            layer.on('mouseout', function(e) {
+                                e.target.setStyle({
+                                    'weight': 1,
+                                    'dashArray': 3
+                                });
+                            })
+                            layer.addTo(layerAggingGroup);
+
+                        }); // loop                
+                    }); //ready aging
+
+                    function style(a) {
+                        if (a <= 100)
+                            return 'lime';
+                        if (a < 500)
+                            return 'orangered';
+                        if (a >= 500)
+                            return 'red';
+                    }
+
+                    function style2(a) {
+                        if (a <= 20)
+                            return 'lime';
+                        if (a < 50)
+                            return 'orangered';
+                        if (a >= 50)
+                            return 'red';
+                    }
 
 
 
-            L.control.layers(baseMap, {
-                'ประชากรทั้งหมด': layerTotalGroup.addTo(map),
-                'ประชากรผู้อายุ60ปีขึ้นไป': layerAggingGroup
-            }, {
-                collapsed: false
-            }).addTo(map);
+                    L.control.layers(baseMap, {
+                        'ประชากรทั้งหมด': layerTotalGroup.addTo(map),
+                        'ประชากรผู้อายุ60ปีขึ้นไป': layerAggingGroup
+                    }, {
+                        collapsed: false
+                    }).addTo(map);
 
-            //legand
+                    //legand
 
-            var legend_pop = L.control({
-                position: 'topright'
-            });
-            legend_pop.onAdd = function(map) {
-                var div = L.DomUtil.create('div', 'info legend');
-                var labels = ['<b>คำอธิบาย</b>'];
+                    var legend_pop = L.control({
+                        position: 'topright'
+                    });
+                    legend_pop.onAdd = function(map) {
+                        var div = L.DomUtil.create('div', 'info legend');
+                        var labels = ['<b>คำอธิบาย</b>'];
 
-                labels.push('<i style="background:lime"></i>0 - 100 คน:ตร.กม.');
-                labels.push('<i style="background:orangered"></i>101 - 499 คน:ตร.กม.');
-                labels.push('<i style="background:red"></i>มากว่าเท่ากับ 500 คน:ตร.กม. ');
-                labels.push('');
-                labels.push('<u>แหล่งข้อมูล</u>');
-                labels.push('จากการสำรวจของหน่วยบริการ');
-                labels.push('เฉพาะประชากรที่ยังมีชีวิตอยู่');
-                div.innerHTML = labels.join('<br>');
-                return div;
-            };
-            legend_pop.addTo(map);
-
-
-            var legend_agging = L.control({
-                position: 'topright'
-            });
-            legend_agging.onAdd = function(map) {
-                var div = L.DomUtil.create('div', 'info legend');
-                var labels = ['<b>คำอธิบาย</b>'];
-
-                labels.push('<i style="background:lime"></i>อัตราส่วน 0 - 20');
-                labels.push('<i style="background:orangered"></i>อัตราส่วน 21 - 49');
-                labels.push('<i style="background:red"></i>อัตราส่วน 50 ขึ้นไป');
-                labels.push('');
-                labels.push('<u>แหล่งข้อมูล</u>');
-                labels.push('จากการสำรวจของหน่วยบริการ');
-                labels.push('เฉพาะผู้สูงอายุที่ยังมีชีวิตอยู่');
-                div.innerHTML = labels.join('<br>');
-                return div;
-            };
-            //legend_pop.addTo(map);
-
-            map.on('overlayadd', function(e) {
-                if (e.name === 'ประชากรทั้งหมด') {
+                        labels.push('<i style="background:lime"></i>0 - 100 คน:ตร.กม.');
+                        labels.push('<i style="background:orangered"></i>101 - 499 คน:ตร.กม.');
+                        labels.push('<i style="background:red"></i>มากว่าเท่ากับ 500 คน:ตร.กม. ');
+                        labels.push('');
+                        labels.push('<u>แหล่งข้อมูล</u>');
+                        labels.push('จากการสำรวจของหน่วยบริการ');
+                        labels.push('เฉพาะประชากรที่ยังมีชีวิตอยู่');
+                        div.innerHTML = labels.join('<br>');
+                        return div;
+                    };
                     legend_pop.addTo(map);
-                }
-                if (e.name === 'ประชากรผู้อายุ60ปีขึ้นไป') {
-                    legend_agging.addTo(map);
-                }
-            });
-            map.on('overlayremove', function(e) {
-                if (e.name === 'ประชากรทั้งหมด') {
-                    legend_pop.remove();
-                }
-                if (e.name === 'ประชากรผู้อายุ60ปีขึ้นไป') {
-                    legend_agging.remove();
-                }
-            })
-        });
-    </script>
+
+
+                    var legend_agging = L.control({
+                        position: 'topright'
+                    });
+                    legend_agging.onAdd = function(map) {
+                        var div = L.DomUtil.create('div', 'info legend');
+                        var labels = ['<b>คำอธิบาย</b>'];
+
+                        labels.push('<i style="background:lime"></i>อัตราส่วน 0 - 20');
+                        labels.push('<i style="background:orangered"></i>อัตราส่วน 21 - 49');
+                        labels.push('<i style="background:red"></i>อัตราส่วน 50 ขึ้นไป');
+                        labels.push('');
+                        labels.push('<u>แหล่งข้อมูล</u>');
+                        labels.push('จากการสำรวจของหน่วยบริการ');
+                        labels.push('เฉพาะผู้สูงอายุที่ยังมีชีวิตอยู่');
+                        div.innerHTML = labels.join('<br>');
+                        return div;
+                    };
+                    //legend_pop.addTo(map);
+
+                    map.on('overlayadd', function(e) {
+                        if (e.name === 'ประชากรทั้งหมด') {
+                            legend_pop.addTo(map);
+                        }
+                        if (e.name === 'ประชากรผู้อายุ60ปีขึ้นไป') {
+                            legend_agging.addTo(map);
+                        }
+                    });
+                    map.on('overlayremove', function(e) {
+                        if (e.name === 'ประชากรทั้งหมด') {
+                            legend_pop.remove();
+                        }
+                        if (e.name === 'ประชากรผู้อายุ60ปีขึ้นไป') {
+                            legend_agging.remove();
+                        }
+                    })
+                });
+            </script>
+
+
 </body>
 
 </html>
