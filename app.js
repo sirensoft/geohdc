@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
+var session = require('express-session');
 
 var r_test = require('./routes/test');
 var r_index = require('./routes/index');
@@ -14,6 +15,11 @@ var r_login = require('./routes/login');
 var r_pop = require('./routes/pop');
 
 var app = express();
+app.use(session({
+    secret: 'XASDASDA',
+    resave: false,
+    saveUninitialized: true
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

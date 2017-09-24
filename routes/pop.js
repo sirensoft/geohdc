@@ -9,7 +9,7 @@ var conn_gis_str = require('../config/connect-gis');
 var con_gis = mysql.createConnection(conn_gis_str);
 
 router.get('/', (req, res) => {
-    res.render('pop', { areaname: '' });
+    res.render('pop', { session: req.session });
 });
 
 router.get('/pop-gis', (req, res) => {
