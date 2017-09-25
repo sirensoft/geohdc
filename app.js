@@ -19,7 +19,7 @@ app.use(session({
     secret: 'UTEHN_JADYANGTONE',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 60000 }
+    //cookie: { maxAge: 360000 }
 }));
 
 // view engine setup
