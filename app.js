@@ -16,9 +16,10 @@ var r_pop = require('./routes/pop');
 
 var app = express();
 app.use(session({
-    secret: 'XASDASDA',
+    secret: 'UTEHN_JADYANGTONE',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 }
 }));
 
 // view engine setup
