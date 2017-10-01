@@ -27,7 +27,7 @@
                         contextmenu: true,
                         contextmenuWidth: 140,
                         contextmenuItems: [{
-                            text: 'A',
+                            text: 'จุดเริ่มต้น A',
                             callback: function(e) {
                                 if (A) {
                                     A.remove();
@@ -45,7 +45,7 @@
                                 }).addTo(map);
                             }
                         }, {
-                            text: 'B',
+                            text: 'จุดสิ้นสุด B',
                             callback: function(e) {
                                 if (!A) {
                                     return;
@@ -242,6 +242,7 @@
                                 }).addTo(map)
                             var pop = result.descript.distance + " ," + result.descript.duration;
                             layer_line.bindPopup(pop);
+                            layer_line.openPopup();
 
                         }, function(err) {
                             console.log('direction:' + err);
