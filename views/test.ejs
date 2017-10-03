@@ -2,68 +2,108 @@
 <html lang="en">
 
 <head>
-    <title>GEO-HDC</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="GIS">
-    <meta name="author" content="UTEHN J.">
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-        
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
-
-    <!-- Mapbox.js -->
-    <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
-    <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
-
-
+    <title>template</title>
+    <% include ./partials/head %>
 </head>
 
 <body>
 
 
 
+    <div class="container-fluid">
+        <div id="map"></div>
+    </div>
 
-    <div id="map"></div>
+    <% include ./partials/lib %>
+        <script>
+            // start js code
+            $(function() {
+                L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
+                var map = L.mapbox.map('map', 'mapbox.streets');
+                map.setView([16.00, 100.00], 6);
 
+                var popup = '<div id="container" style="min-width: 360px; min-height: 300px;">Loading...</div>';
 
+                var pol = L.mapbox.featureLayer().loadURL('/data/plk_amp.json').addTo(map);
+                pol.on('ready', function() {
+                    map.fitBounds(pol.getBounds());
+                    pol.eachLayer(function(layer) {
+                        if (layer.feature.properties.AMP_CODE % 3 == 0) {
+                            layer.setStyle({
+                                fillColor: 'red',
+                                dashArray: 3
+                            });
 
-    <!-- jQuery first, then Tether, then Bootstrap JS. -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+                        } else if (layer.feature.properties.AMP_CODE % 2 == 0) {
+                            layer.setStyle({
+                                fillColor: 'yellow',
+                                dashArray: 3
+                            });
+                        } else {
+                            layer.setStyle({
+                                fillColor: 'limegreen',
+                                dashArray: 3
+                            });
+                        }
+                        layer.bindPopup(popup, {
+                            maxWidth: 'auto'
+                        });
+                        layer.on('popupopen', function() {
+                            popupopen(layer.feature.properties.AMP_NAMT)
+                        });
+                        layer.on('popupclose', function(e) {
+                            //$('#container').html("Loading...");
+                        });
 
-
-    <script>
-        $(function() {
-
-            L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
-            var map = L.mapbox.map('map').setView([16, 100], 9);
-
-            var osmStreet = L.mapbox.tileLayer('mapbox.streets').addTo(map);
-            var villLayer = L.mapbox.featureLayer('/test/json').addTo(map);
-            villLayer.on('ready', function(e) {
-                map.fitBounds(e.target.getBounds());
-                e.target.eachLayer(function(layer) {
-                    layer.bindPopup('ม.' + layer.feature.properties.VILL_NO + ' ' + layer.feature.properties.MUBAN);
+                    });
                 });
+
+
+
+                var popupopen = function(amp) {
+
+                    $.ajax({
+                        url: "test/chart",
+                        type: "GET",
+                    }).done(function(data) {
+
+                        $('#container').highcharts({
+                            title: {
+                                text: 'แนวโน้มอัตราป่วยด้วยโรคที่มิยุงเป็นพาหะ'
+                            },
+                            subtitle: {
+                                text: amp
+                            },
+                            credits: false,
+
+                            yAxis: {
+                                title: {
+                                    text: 'อัตราต่อแสน'
+                                }
+                            },
+                            legend: {
+                                //layout: 'vertical',
+                                //align: 'right',
+                                verticalAlign: 'middle'
+                            },
+
+                            plotOptions: {
+                                series: {
+                                    pointStart: 2014
+                                }
+                            },
+                            series: data
+                        })
+                    })
+
+                };
+
             });
 
+            //end js code
+        </script>
 
 
-
-        });
-    </script>
 </body>
 
 </html>
