@@ -6,7 +6,7 @@ var config = require('../config/config-main');
 
 
 var conn_gis_str = require('../config/connect-gis');
-var con_gis = mysql.createConnection(conn_gis_str);
+var con_gis = mysql.createPool(conn_gis_str);
 
 router.get('/', (req, res) => {
     res.render('pop', { session: req.session });

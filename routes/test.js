@@ -10,6 +10,10 @@ var json_village = require('../data/village');
 router.get('/', (req, res) => {
     res.render('test');
 });
+router.get('/test2', (req, res) => {
+    res.render('test2');
+});
+
 router.get('/json', (req, res) => {
 
     var p = req.query.p;

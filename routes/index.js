@@ -5,7 +5,7 @@ var mysql = require('mysql');
 var config = require('../config/config-main');
 
 var conn_gis_str = require('../config/connect-gis');
-var con_gis = mysql.createConnection(conn_gis_str);
+var con_gis = mysql.createPool(conn_gis_str);
 
 
 /* GET home page. */
