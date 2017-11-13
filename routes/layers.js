@@ -1,19 +1,18 @@
 var express = require('express');
 var router = express.Router();
-var mysql = require('mysql');
 var turf = require('@turf/turf');
 var config = require('../config/config-main');
 var villages = require('../data/village');
 
-var conn_gis_str = require('../config/connect-gis');
-var con_gis = mysql.createPool(conn_gis_str);
+
 
 
 router.get('/hospital', (req, res) => {
+    var con_gis_db = req.con_gis_db;
     var sql = "SELECT t.hoscode,t.hosname,t.hostype,t.lat,t.lon from chospital t ";
     sql += " WHERE t.lat is not NULL";
     sql += " AND left(concat(t.provcode,t.distcode),?) = ?";
-    con_gis.query(sql, [config.areacode.length, config.areacode], (err, result, fields) => {
+    con_gis_db.query(sql, [config.areacode.length, config.areacode], (err, result, fields) => {
         var collection = {
             "type": "FeatureCollection",
             "features": []
@@ -44,13 +43,13 @@ router.get('/hospital', (req, res) => {
 }); // hospital
 
 router.get('/mooban', (req, res) => {
-
+    var con_gis_db = req.con_gis_db;
     var collection = {
         "type": "FeatureCollection",
         "features": []
     };
     var sql = " select * from cmooban_gis where left(vill_code,?)=? order by vill_code asc";
-    con_gis.query(sql, [config.areacode.length, config.areacode], (err, result) => {
+    con_gis_db.query(sql, [config.areacode.length, config.areacode], (err, result) => {
             if (err) throw err;
             result.forEach(function(row) {
                 collection.features.push({
@@ -82,12 +81,13 @@ router.get('/mooban', (req, res) => {
 
 // tambon
 router.get('/tambon', (req, res) => {
+    var con_gis_db = req.con_gis_db;
     var collection = {
         "type": "FeatureCollection",
         "features": []
     };
     var sql = "select * from ctambon_gis where left(fullcode,?) = ?";
-    con_gis.query(sql, [config.areacode.length, config.areacode], (err, result) => {
+    con_gis_db.query(sql, [config.areacode.length, config.areacode], (err, result) => {
         if (err) throw err;
         result.forEach(function(row) {
             collection.features.push({

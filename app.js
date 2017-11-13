@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var session = require('express-session');
 
+
 var r_test = require('./routes/test');
 var r_index = require('./routes/index');
 var r_users = require('./routes/users');
@@ -23,8 +24,17 @@ app.use(session({
 }));
 
 // view engine setup
+
 app.set('views', path.join(__dirname, 'views'));
+//app.engine('.ejs', ejs.renderFile);
 app.set('view engine', 'ejs');
+
+var con_gis_str = require('./config/connect-gis');
+var con_gis_db = mysql.createPool(con_gis_str);
+app.use(function(req, res, next) {
+    req.con_gis_db = con_gis_db;
+    next();
+});
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -40,6 +50,8 @@ app.use('/users', r_users);
 app.use('/layers', r_layers);
 app.use('/login', r_login);
 app.use('/pop', r_pop);
+
+
 
 
 // catch 404 and forward to error handler
@@ -60,29 +72,6 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-var connection;
-var db_config = require('./config/connect-gis');
 
-function handleDisconnect() {
-    connection = mysql.createConnection(db_config);
-
-
-    connection.connect(function(err) {
-        if (err) {
-            console.log('error when connecting to db:', err);
-            setTimeout(handleDisconnect, 1000);
-        }
-    });
-    connection.on('error', function(err) {
-        console.log('db error', err);
-        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-            handleDisconnect();
-        } else {
-            throw err;
-        }
-    });
-};
-
-handleDisconnect();
 
 module.exports = app;
