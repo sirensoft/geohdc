@@ -10,7 +10,7 @@ var config = require('../config/config-main');
 router.get('/', function(req, res) {
     res.redirect('/index');
 });
-router.get('/index', function(req, res, next) {
+router.get('/index', function(req, res) {
     var con_gis_db = req.con_gis_db;
 
     var sql = "replace into sys_area (areacode) values (?)"
