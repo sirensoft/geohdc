@@ -5,254 +5,258 @@
     <title>GEO-HDC</title>
 
     <% include ./partials/head %>
+
 </head>
 
 <body>
-    <% include ./partials/navbar %>
+    <% if (false) { %>
+        dddddd
+        <% } %>
+            <% include ./partials/navbar %>
 
-        <div class="container-fluid">
-            <div id="map"></div>
-        </div>
+                <div class="container-fluid">
+                    <div id="map"></div>
+                </div>
 
-        <% include ./partials/lib %>
+                <% include ./partials/lib %>
 
-            <script>
-                $(function() {
-                    L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
-                    var A, B;
-                    var layer_line = L.mapbox.featureLayer();
-
-
-                    var options = {
-                        fullscreenControl: true,
-                        contextmenu: true,
-                        contextmenuWidth: 140,
-                        contextmenuItems: [{
-                            text: 'จุดเริ่มต้น A',
-                            callback: function(e) {
-                                if (A) {
-                                    A.remove();
-                                    layer_line.remove();
-                                }
-                                if (B) {
-                                    B.remove();
-                                }
-                                A = L.marker(e.latlng, {
-                                    'draggable': true,
-                                    icon: L.mapbox.marker.icon({
-                                        'marker-symbol': 'a'
-                                    })
-
-                                }).addTo(map);
-                            }
-                        }, {
-                            text: 'จุดสิ้นสุด B',
-                            callback: function(e) {
-                                if (!A) {
-                                    return;
-                                }
-                                if (B) {
-                                    B.remove();
-                                }
-                                B = L.marker(e.latlng, {
-                                    'draggable': true,
-                                    icon: L.mapbox.marker.icon({
-                                        'marker-symbol': 'b'
-                                    })
-                                }).addTo(map);
-                                var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
-                                var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
-                                calDirection(from, to, 'blue');
-                                A.on('dragend', function(e) {
-                                    var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
-                                    var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
-                                    calDirection(from, to, 'blue');
-                                });
-                                B.on('dragend', function(e) {
-                                    var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
-                                    var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
-                                    calDirection(from, to, 'blue');
-                                });
-                            }
-                        }, {
-                            text: '<hr/>'
-                        }]
-                    };
-
-                    var map = L.mapbox.map('map', null, options).setView([16, 100], 9);
-                    var hash = L.hash(map);
-
-                    //base-map
-                    var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                        maxZoom: 20,
-                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                    });
-                    var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}&hl=th', {
-                        maxZoom: 20,
-                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                    });
-                    var googleStreet = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=th', {
-                        maxZoom: 20,
-                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                    });
-                    var googleTerain = L.tileLayer('http://{s}.google.com/vt/lyrs=t&x={x}&y={y}&z={z}&hl=th', {
-                        maxZoom: 20,
-                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-                    });
-
-                    var osmStreet = L.mapbox.tileLayer('mapbox.streets');
-
-                    var baseMap = {
-                        'OSM-ถนน': osmStreet,
-                        'Google-ถนน': googleStreet,
-                        'Google-ผสม': googleHybrid,
-                        'Google-ดาวเทียม': googleSat,
-                        'Google-ภูมิประเทศ': googleTerain.addTo(map)
-                            //'ไม่แสดง': {}
-
-                    };
-                    //end-base
-
-                    var availableTags = [];
-                    $('#txt-find-hos').click(function(e) {
-                        $(this).select();
-                    });
-
-                    //hospital
-                    var hospitalLayer = L.featureGroup();
-                    var hos_data = L.mapbox.featureLayer();
-                    hos_data.loadURL('/layers/hospital').on('ready', (e) => {
-                        map.fitBounds(e.target.getBounds());
-                        e.target.eachLayer((layer) => {
-                            var hosname = layer.feature.properties.hosname;
-                            availableTags.push(hosname);
-                            layer.bindPopup(hosname);
-                            if (layer.feature.properties.hostype === '05') {
-                                layer.setIcon(L.mapbox.marker.icon({
-                                    'marker-size': 'large',
-                                    'marker-symbol': 'h',
-                                    'marker-color': '#B22222'
-                                }));
-                            }
-                            if (layer.feature.properties.hostype === '07') {
-                                layer.setIcon(L.mapbox.marker.icon({
-                                    'marker-size': 'medium',
-                                    'marker-symbol': 'h',
-                                    'marker-color': '#32CD32'
-                                }));
-                            }
-                            layer.addTo(hospitalLayer);
-                        });
-
-                        $("#txt-find-hos").autocomplete({
-                            source: availableTags
-                        })
+                    <script>
+                        $(function() {
+                            L.mapbox.accessToken = 'pk.eyJ1IjoidGVobm5uIiwiYSI6ImNpZzF4bHV4NDE0dTZ1M200YWxweHR0ZzcifQ.lpRRelYpT0ucv1NN08KUWQ';
+                            var A, B;
+                            var layer_line = L.mapbox.featureLayer();
 
 
-                        $('#frm-find-hos').submit((e) => {
-                            //$('#navbarsGisDefault').toggle();
-                            var find = $('#txt-find-hos').val();
-                            hos_data.eachLayer((layer) => {
-                                if (layer.feature.properties.hosname === find) {
-                                    map.setZoom(16);
-                                    map.panTo(layer.getLatLng());
-                                    layer.openPopup();
+                            var options = {
+                                fullscreenControl: true,
+                                contextmenu: true,
+                                contextmenuWidth: 140,
+                                contextmenuItems: [{
+                                    text: 'จุดเริ่มต้น A',
+                                    callback: function(e) {
+                                        if (A) {
+                                            A.remove();
+                                            layer_line.remove();
+                                        }
+                                        if (B) {
+                                            B.remove();
+                                        }
+                                        A = L.marker(e.latlng, {
+                                            'draggable': true,
+                                            icon: L.mapbox.marker.icon({
+                                                'marker-symbol': 'a'
+                                            })
 
-                                    return;
-                                }
+                                        }).addTo(map);
+                                    }
+                                }, {
+                                    text: 'จุดสิ้นสุด B',
+                                    callback: function(e) {
+                                        if (!A) {
+                                            return;
+                                        }
+                                        if (B) {
+                                            B.remove();
+                                        }
+                                        B = L.marker(e.latlng, {
+                                            'draggable': true,
+                                            icon: L.mapbox.marker.icon({
+                                                'marker-symbol': 'b'
+                                            })
+                                        }).addTo(map);
+                                        var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
+                                        var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
+                                        calDirection(from, to, 'blue');
+                                        A.on('dragend', function(e) {
+                                            var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
+                                            var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
+                                            calDirection(from, to, 'blue');
+                                        });
+                                        B.on('dragend', function(e) {
+                                            var from = A.getLatLng().lat + ',' + A.getLatLng().lng;
+                                            var to = B.getLatLng().lat + ',' + B.getLatLng().lng;
+                                            calDirection(from, to, 'blue');
+                                        });
+                                    }
+                                }, {
+                                    text: '<hr/>'
+                                }]
+                            };
+
+                            var map = L.mapbox.map('map', null, options).setView([16, 100], 9);
+                            var hash = L.hash(map);
+
+                            //base-map
+                            var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                                maxZoom: 20,
+                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                            });
+                            var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}&hl=th', {
+                                maxZoom: 20,
+                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                            });
+                            var googleStreet = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=th', {
+                                maxZoom: 20,
+                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                            });
+                            var googleTerain = L.tileLayer('http://{s}.google.com/vt/lyrs=t&x={x}&y={y}&z={z}&hl=th', {
+                                maxZoom: 20,
+                                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
                             });
 
-                        });
-                    }); //end hospital ready
+                            var osmStreet = L.mapbox.tileLayer('mapbox.streets');
 
-                    //mooban
-                    var mooban = L.mapbox.featureLayer();
-                    mooban.loadURL('/layers/mooban');
+                            var baseMap = {
+                                'OSM-ถนน': osmStreet,
+                                'Google-ถนน': googleStreet,
+                                'Google-ผสม': googleHybrid,
+                                'Google-ดาวเทียม': googleSat,
+                                'Google-ภูมิประเทศ': googleTerain.addTo(map)
+                                    //'ไม่แสดง': {}
 
-                    //mooban
+                            };
+                            //end-base
 
+                            var availableTags = [];
+                            $('#txt-find-hos').click(function(e) {
+                                $(this).select();
+                            });
 
+                            //hospital
+                            var hospitalLayer = L.featureGroup();
+                            var hos_data = L.mapbox.featureLayer();
+                            hos_data.loadURL('/layers/hospital').on('ready', (e) => {
+                                map.fitBounds(e.target.getBounds());
+                                e.target.eachLayer((layer) => {
+                                    var hosname = layer.feature.properties.hosname;
+                                    availableTags.push(hosname);
+                                    layer.bindPopup(hosname);
+                                    if (layer.feature.properties.hostype === '05') {
+                                        layer.setIcon(L.mapbox.marker.icon({
+                                            'marker-size': 'large',
+                                            'marker-symbol': 'h',
+                                            'marker-color': '#B22222'
+                                        }));
+                                    }
+                                    if (layer.feature.properties.hostype === '07') {
+                                        layer.setIcon(L.mapbox.marker.icon({
+                                            'marker-size': 'medium',
+                                            'marker-symbol': 'h',
+                                            'marker-color': '#32CD32'
+                                        }));
+                                    }
+                                    layer.addTo(hospitalLayer);
+                                });
 
-                    //ขอบเขตการปกครอง
-                    var admin_boder = L.tileLayer.wms('http://tile.gistda.or.th/geoserver/wms', {
-                        layers: "flood:L0503_gistda_50k",
-                        transparent: true,
-                        format: 'image/png',
-                        tiles: true,
-                        attribution: 'GISTDA @ Copyright 2016',
-
-                    });
-
-                    //แผนที่น้ำท่วมรอบ 7 วัน
-                    var flood_update = L.tileLayer.wms('http://tile.gistda.or.th/geoserver/flood/wms', {
-                        layers: "floodarea_tambon",
-                        transparent: true,
-                        format: 'image/png',
-                        tiles: true,
-                        attribution: 'GISTDA @ Copyright 2016',
-
-                    });
-
-                    //ฝน
-                    var rain = L.layerGroup();
-                    var base_url = 'http://rain.tvis.in.th/';
-                    var radar = 'NongKham';
-                    var radars = '["NongKham","KKN","PHS","CRI","UBN","OMK"]';
-                    var latlng_topright = '["15.09352819610486,101.7458188486135","18.793550,105.026265","19.094393,102.475537","22.305437,102.143387","17.558854,107.095363","19.904425,100.770048"]';
-                    var latlng_bottomleft = '["12.38196058009694,98.97206140040996","14.116192,100.541459","14.411350,97.983591","17.596297,97.611690","12.918883,102.646771","15.630408,96.114592"]';
-                    var d = new Date();
-                    var time = d.getTime();
-                    //console.log(time);
-                    radars = JSON.parse(radars);
-                    latlng_topright = JSON.parse(latlng_topright);
-                    latlng_bottomleft = JSON.parse(latlng_bottomleft);
-                    var urllast;
-                    var boundlast;
-                    $.each(radars, function(key, value) {
-                        var top_right = latlng_topright[key].split(",");
-                        var bottom_left = latlng_bottomleft[key].split(",");
-
-                        var imageUrl = base_url + "/output/" + value + ".png?" + time,
-                            imageBounds = [
-                                [top_right[0], top_right[1]],
-                                [bottom_left[0], bottom_left[1]]
-                            ];
-                        L.imageOverlay(imageUrl, imageBounds).addTo(rain).setOpacity(0.95);
-                    });
-                    //จบฝน
+                                $("#txt-find-hos").autocomplete({
+                                    source: availableTags
+                                })
 
 
-                    L.control.layers(baseMap, {
-                        'โรงพยาบาล': hospitalLayer.addTo(map),
-                        'ที่ตั้งหมู่บ้าน': mooban,
-                        'เขตการปกครอง': admin_boder.addTo(map),
-                        'น้ำท่วมขัง': flood_update,
-                        'เรดาห์น้ำฝน': rain
-                    }).addTo(map);
+                                $('#frm-find-hos').submit((e) => {
+                                    //$('#navbarsGisDefault').toggle();
+                                    var find = $('#txt-find-hos').val();
+                                    hos_data.eachLayer((layer) => {
+                                        if (layer.feature.properties.hosname === find) {
+                                            map.setZoom(16);
+                                            map.panTo(layer.getLatLng());
+                                            layer.openPopup();
 
-                    //direction
+                                            return;
+                                        }
+                                    });
 
-                    var calDirection = function(origin, destination, color) {
-                        direction(origin, destination).then(function(result) {
-                            var json_line = polyline.toGeoJSON(result.route);
-                            layer_line.remove();
-                            layer_line.setGeoJSON(json_line)
-                                .setStyle({
-                                    weight: 5,
-                                    color: color
-                                }).addTo(map)
-                            var pop = result.descript.distance + " ," + result.descript.duration;
-                            layer_line.bindPopup(pop);
-                            layer_line.openPopup();
+                                });
+                            }); //end hospital ready
 
-                        }, function(err) {
-                            console.log('direction:' + err);
-                        });
-                    };
+                            //mooban
+                            var mooban = L.mapbox.featureLayer();
+                            mooban.loadURL('/layers/mooban');
+
+                            //mooban
 
 
-                }); //end page Ready
-            </script>
+
+                            //ขอบเขตการปกครอง
+                            var admin_boder = L.tileLayer.wms('http://tile.gistda.or.th/geoserver/wms', {
+                                layers: "flood:L0503_gistda_50k",
+                                transparent: true,
+                                format: 'image/png',
+                                tiles: true,
+                                attribution: 'GISTDA @ Copyright 2016',
+
+                            });
+
+                            //แผนที่น้ำท่วมรอบ 7 วัน
+                            var flood_update = L.tileLayer.wms('http://tile.gistda.or.th/geoserver/flood/wms', {
+                                layers: "floodarea_tambon",
+                                transparent: true,
+                                format: 'image/png',
+                                tiles: true,
+                                attribution: 'GISTDA @ Copyright 2016',
+
+                            });
+
+                            //ฝน
+                            var rain = L.layerGroup();
+                            var base_url = 'http://rain.tvis.in.th/';
+                            var radar = 'NongKham';
+                            var radars = '["NongKham","KKN","PHS","CRI","UBN","OMK"]';
+                            var latlng_topright = '["15.09352819610486,101.7458188486135","18.793550,105.026265","19.094393,102.475537","22.305437,102.143387","17.558854,107.095363","19.904425,100.770048"]';
+                            var latlng_bottomleft = '["12.38196058009694,98.97206140040996","14.116192,100.541459","14.411350,97.983591","17.596297,97.611690","12.918883,102.646771","15.630408,96.114592"]';
+                            var d = new Date();
+                            var time = d.getTime();
+                            //console.log(time);
+                            radars = JSON.parse(radars);
+                            latlng_topright = JSON.parse(latlng_topright);
+                            latlng_bottomleft = JSON.parse(latlng_bottomleft);
+                            var urllast;
+                            var boundlast;
+                            $.each(radars, function(key, value) {
+                                var top_right = latlng_topright[key].split(",");
+                                var bottom_left = latlng_bottomleft[key].split(",");
+
+                                var imageUrl = base_url + "/output/" + value + ".png?" + time,
+                                    imageBounds = [
+                                        [top_right[0], top_right[1]],
+                                        [bottom_left[0], bottom_left[1]]
+                                    ];
+                                L.imageOverlay(imageUrl, imageBounds).addTo(rain).setOpacity(0.95);
+                            });
+                            //จบฝน
+
+
+                            L.control.layers(baseMap, {
+                                'โรงพยาบาล': hospitalLayer.addTo(map),
+                                'ที่ตั้งหมู่บ้าน': mooban,
+                                'เขตการปกครอง': admin_boder.addTo(map),
+                                'น้ำท่วมขัง': flood_update,
+                                'เรดาห์น้ำฝน': rain
+                            }).addTo(map);
+
+                            //direction
+
+                            var calDirection = function(origin, destination, color) {
+                                direction(origin, destination).then(function(result) {
+                                    var json_line = polyline.toGeoJSON(result.route);
+                                    layer_line.remove();
+                                    layer_line.setGeoJSON(json_line)
+                                        .setStyle({
+                                            weight: 5,
+                                            color: color
+                                        }).addTo(map)
+                                    var pop = result.descript.distance + " ," + result.descript.duration;
+                                    layer_line.bindPopup(pop);
+                                    layer_line.openPopup();
+
+                                }, function(err) {
+                                    console.log('direction:' + err);
+                                });
+                            };
+
+
+                        }); //end page Ready
+                    </script>
 
 
 </body>
