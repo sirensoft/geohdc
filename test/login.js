@@ -51,7 +51,8 @@ app.get('/', function(req, res) {
 })
 
 app.get('/person', function(req, res) {
-    res.status(200).json([{ name: 'a', age: 26 }, { name: 'b', age: 26 }])
+    let persons = [{ name: 'aaaaaa', age: 26 }, { name: 'bbbbb', age: 20 }]
+    res.render('person', { persons: persons })
 })
 
 app.listen(88)

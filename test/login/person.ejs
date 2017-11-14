@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Person</title>
+</head>
+
+<body>
+    <h2>Person</h2>
+    <%=JSON.stringify(persons)%>
+        <table border="1">
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+            </tr>
+            <%persons.forEach((p)=>{%>
+                <tr>
+                    <td>
+                        <%=p.name%>
+                    </td>
+                    <td>
+                        <%=p.age%>
+                    </td>
+                </tr>
+                <%})%>
+        </table>
+</body>
+
+</html>
