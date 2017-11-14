@@ -44,8 +44,10 @@ var auth = function(req, res, next) {
     }
 }
 
-app.use(auth)
 
+
+//app.get('/',auth,function(req,res){...}) 
+app.use(auth) // มีผลเฉพาะ route ถัดจากคำสั่งนี้
 app.get('/', function(req, res) {
     res.send('First page for...' + req.session.username)
 })
