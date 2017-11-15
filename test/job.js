@@ -4,7 +4,7 @@ var user = require('./models/user')
 var mUser = new user();
 
 router.get('/', function(req, res) {
-    res.send('First page for...' + req.session.username)
+    res.render('index')
 })
 
 router.get('/person', async function(req, res) {
