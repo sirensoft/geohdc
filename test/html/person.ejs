@@ -10,16 +10,20 @@
     <%=JSON.stringify(persons)%>
         <table border="1">
             <tr>
+                <th>Id</th>
                 <th>Name</th>
-                <th>Age</th>
+                <th>Email</th>
             </tr>
             <%persons.forEach((p)=>{%>
                 <tr>
                     <td>
-                        <%=p.name%>
+                        <%=p.id%>
                     </td>
                     <td>
-                        <%=p.age%>
+                        <%=p.username%>
+                    </td>
+                    <td>
+                        <%=p.email%>
                     </td>
                 </tr>
                 <%})%>
