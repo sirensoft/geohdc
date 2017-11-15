@@ -46,7 +46,7 @@ var tokenCheck = function(req, res, next) {
     if (token) {
         jwt.verify(token, 'secret', function(err, decoded) {
             if (err) {
-                return res.json({ success: false, message: 'Invalid token.' });
+                return res.json({ success: false, message: 'Invalid or Expired token.' });
             } else {
                 req.decoded = decoded;
                 next();

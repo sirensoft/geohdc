@@ -9,7 +9,7 @@ router.post('/', function(req, res) {
     if (req.body.username.trim()) {
         req.session.logged = true
         req.session.username = req.body.username
-        var token = jwt.sign({ data: req.body.username }, 'secret', { expiresIn: '1h' })
+        var token = jwt.sign({ data: req.body.username }, 'secret', { expiresIn: 60 })
         console.log(token)
         res.redirect('/job')
     } else {
