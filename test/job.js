@@ -12,10 +12,16 @@ router.get('/person', async function(req, res) {
     res.render('person', { persons: rows[0] })
 })
 
+
 router.get('/person2', (req, res) => {
     mUser.list().then(function(rows) {
         res.render('person', { persons: rows[0] });
     })
+})
+
+router.get('/person3', async(req, res) => {
+    var rows = await mUser.list();
+    res.status(200).json(rows[0])
 })
 
 module.exports = router
