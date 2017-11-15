@@ -8,8 +8,14 @@ router.get('/', function(req, res) {
 })
 
 router.get('/person', async function(req, res) {
-    let rows = await mUser.list()
-    res.render('person', { persons: rows[0] })
+    try {
+        let rows = await mUser.list()
+        res.render('person', { persons: rows[0] })
+    } catch (error) {
+        throw error;
+    }
+
+
 })
 
 
