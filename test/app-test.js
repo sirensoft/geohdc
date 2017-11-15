@@ -19,7 +19,10 @@ app.use(session({
     cookie: { secure: false }
 }))
 
-
+app.use(function(req, res, next) {
+    res.locals.session = req.session
+    next();
+})
 app.use('/auth', r_auth)
 
 var auth_check = function(req, res, next) {

@@ -6,7 +6,9 @@
 </head>
 
 <body>
-    <h2>Person</h2>
+    <h2>
+        <%=session.username%>
+    </h2>
     <%=JSON.stringify(persons)%>
         <table border="1">
             <tr>
