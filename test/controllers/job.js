@@ -1,9 +1,11 @@
 var express = require('express')
 var router = express.Router();
-var user = new require('./models/user')
+var user = new require('../models/user')
 var mUser = new user();
 
+var authCheck = require('../modules/authcheck')
 
+router.use(authCheck)
 
 router.get('/', function(req, res) {
     res.render('index')

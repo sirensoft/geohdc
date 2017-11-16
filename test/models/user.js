@@ -9,6 +9,7 @@ class user {
     list() {
         let sql = "select id,username,email from user"
         return knex.raw(sql)
+
     }
 }
 
