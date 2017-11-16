@@ -12,11 +12,8 @@ router.get('/', function(req, res) {
 })
 
 router.get('/person', async function(req, res) {
-
     let rows = await mUser.list()
     res.render('person', { persons: rows[0] })
-
-
 })
 
 
@@ -25,9 +22,6 @@ router.get('/person2', (req, res) => {
         res.render('person', { persons: rows[0] });
     })
 })
-
-
-
 
 
 module.exports = router
